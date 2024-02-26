@@ -342,71 +342,76 @@ Testing algorithm with different key values.
 ## PROGRAM:
 ```
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
- 
-void upper_case(char *src) {
-    while (*src != '\0') {
-        if (islower(*src))
-            *src &= ~0x20;
-        src++;
+
+#define MAX_LENGTH 100
+
+// Function to encrypt or decrypt text using the Vigenère cipher
+void vigenereCipher(char *input, char *key, char *output, int encrypt) {
+    int inputLength = strlen(input);
+    int keyLength = strlen(key);
+
+    for (int i = 0, j = 0; i < inputLength; ++i) {
+        char currentChar = input[i];
+        
+        if (isalpha(currentChar)) {
+            // Determine the shift value based on the key
+            int keyIndex = j % keyLength;
+            int shift = toupper(key[keyIndex]) - 'A';
+
+            if (!encrypt) {
+                shift = -shift;
+            }
+
+            // Encrypt or decrypt the current character
+            if (isupper(currentChar)) {
+                output[i] = ((currentChar - 'A' + shift + 26) % 26) + 'A';
+            } else {
+                output[i] = ((currentChar - 'a' + shift + 26) % 26) + 'a';
+            }
+
+            ++j;
+        } else {
+            // Non-alphabetic characters remain unchanged
+            output[i] = currentChar;
+        }
     }
+
+    output[inputLength] = '\0';
 }
- 
-char* encipher(const char *src, char *key, int is_encode) {
-    int i, klen, slen;
-    char *dest;
- 
-    dest = strdup(src);
-    upper_case(dest);
-    upper_case(key);
- 
-    /* strip out non-letters */
-    for (i = 0, slen = 0; dest[slen] != '\0'; slen++)
-        if (isupper(dest[slen]))
-            dest[i++] = dest[slen];
- 
-    dest[slen = i] = '\0'; /* null pad it, make it safe to use */
- 
-    klen = strlen(key);
-    for (i = 0; i < slen; i++) {
-        if (!isupper(dest[i]))
-            continue;
-        dest[i] = 'A' + (is_encode ? dest[i] - 'A' + key[i % klen] - 'A'
-                : dest[i] - key[i % klen] + 26) % 26;
-    }
- 
-    return dest;
-}
- 
+
 int main() {
-    const char *str = "Beware the Jabberwock, my son! The jaws that bite, "
-        "the claws that catch!";
-    const char *cod, *dec;
-    char key[] = "VIGENERECIPHER";
- 
-    printf("Text: %s\n", str);
-    printf("key:  %s\n", key);
- 
-    cod = encipher(str, key, 1);
-    printf("Code: %s\n", cod);
-    dec = encipher(cod, key, 0);
-    printf("Back: %s\n", dec);
- 
-    /* free(dec); free(cod); *//* nah */
+    char input[MAX_LENGTH];
+    char key[MAX_LENGTH];
+    char encrypted[MAX_LENGTH];
+    char decrypted[MAX_LENGTH];
+
+    printf("Enter the text to encrypt: ");
+    fgets(input, MAX_LENGTH, stdin);
+    input[strcspn(input, "\n")] = '\0'; // Remove trailing newline if present
+
+    printf("Enter the key: ");
+    fgets(key, MAX_LENGTH, stdin);
+    key[strcspn(key, "\n")] = '\0'; // Remove trailing newline if present
+
+    // Encrypt the input text
+    vigenereCipher(input, key, encrypted, 1);
+    printf("Encrypted text: %s\n", encrypted);
+
+    // Decrypt the encrypted text
+    vigenereCipher(encrypted, key, decrypted, 0);
+    printf("Decrypted text: %s\n", decrypted);
+
     return 0;
 }
+
 ```
 
 
 ## OUTPUT:
-```
-Text: Beware the Jabberwock, my son! The jaws that bite, the claws that catch!
-key:  VIGENERECIPHER
-Code: WMCEEIKLGRPIFVMEUGXQPWQVIOIAVEYXUEKFKBTALVXTGAFXYEVKPAGY
-Back: BEWARETHEJABBERWOCKMYSONTHEJAWSTHATBITETHECLAWSTHATCATCH
-```
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/d6fbec8b-f18c-4d95-878d-7637426ddd25)
+
 
 ## RESULT:
 The program is executed successfully
