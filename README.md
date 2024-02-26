@@ -24,69 +24,50 @@ Testing algorithm with different key values.
 
 ## PROGRAM:
 ```
-#include<stdio.h>
-
-#include<ctype.h>
+#include <stdio.h>
+#include <string.h>
 
 int main() {
+    // Declaring variables
+    int i, key;
+    char s[1000], c;
 
-    char text[500], ch;
+    // Taking Input
+    printf("Enter a plaintext to encrypt:\n");
+    fgets(s, sizeof(s), stdin);
+    printf("Enter key:\n");
+    scanf("%d", &key);
 
-    int key;
+    int n = strlen(s);
 
-    // Taking user input.
-    printf("Enter a message to encrypt: ");
-
-    scanf("%s", text);
-
-    printf("Enter the key: ");
-
-    scanf("%d", & key);
-
-    // Visiting character by character.
-
-    for (int i = 0; text[i] != '\0'; ++i) {
-
-        ch = text[i];
-        // Check for valid characters.
-        if (isalnum(ch)) {
-
-            //Lowercase characters.
-            if (islower(ch)) {
-                ch = (ch - 'a' + key) % 26 + 'a';
+    // Encrypting each character according to the given key
+    for (i = 0; i < n; i++) {
+        c = s[i];
+        if (c >= 'a' && c <= 'z') {
+            c = c + key;
+            if (c > 'z') {
+                c = c - 'z' + 'a' - 1;
             }
-            // Uppercase characters.
-            if (isupper(ch)) {
-                ch = (ch - 'A' + key) % 26 + 'A';
+            s[i] = c;
+        } else if (c >= 'A' && c <= 'Z') {
+            c = c + key;
+            if (c > 'Z') {
+                c = c - 'Z' + 'A' - 1;
             }
-
-            // Numbers.
-            if (isdigit(ch)) {
-                ch = (ch - '0' + key) % 10 + '0';
-            }
+            s[i] = c;
         }
-        // Invalid character.
-        else {
-            printf("Invalid Message");
-        }
-
-        // Adding encoded answer.
-        text[i] = ch;
-
     }
 
-    printf("Encrypted message: %s", text);
+    // Output the cipher
+    printf("Encrypted message: %s\n", s);
 
     return 0;
 }
 ```
 
 ## OUTPUT:
-```
-Enter a message to encrypt: yZq8NS92mdR
-Enter the key: 6
-Encrypted message: eFw4TY58sjX
-```
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/6e84dc05-af77-44f4-b880-0f9e995262cc)
+
 
 ## RESULT:
 The program is executed successfully
