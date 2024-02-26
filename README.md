@@ -307,19 +307,11 @@ int main() {
         printf(" %c", c[i] + 65);
     return 0;
 }
-
-
-
-
 ```
 
 ## OUTPUT:
-```
-Enter plain text: SAN
- 18 0 13 
-Encrypted Cipher Text : R A J
-Decrypted Cipher Text : S A N
-```
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/0fe2651e-6b45-42fd-8cc6-c608c4a07d4e)
+
 
 ## RESULT:
 The program is executed successfully
