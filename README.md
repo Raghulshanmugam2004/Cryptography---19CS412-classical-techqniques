@@ -441,91 +441,53 @@ Testing algorithm with different key values.
 
 ## PROGRAM:
 ```
-#include<stdio.h>
-#include<string.h>
- 
-void encryptMsg(char msg[], int key){
-    int msgLen = strlen(msg), i, j, k = -1, row = 0, col = 0;
-    char railMatrix[key][msgLen];
- 
-    for(i = 0; i < key; ++i)
-        for(j = 0; j < msgLen; ++j)
-            railMatrix[i][j] = '\n';
- 
-    for(i = 0; i < msgLen; ++i){
-        railMatrix[row][col++] = msg[i];
- 
-        if(row == 0 || row == key-1)
-            k= k * (-1);
- 
-        row = row + k;
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_LENGTH 100
+
+// Function to encrypt text using the Rail Fence cipher
+void railFenceEncrypt(char *input, int rails, char *output) {
+    int inputLength = strlen(input);
+    int cycle = 2 * (rails - 1);
+
+    for (int i = 0, k = 0; i < rails; ++i) {
+        for (int j = i; j < inputLength; j += cycle) {
+            output[k++] = input[j];
+            if (i != 0 && i != rails - 1 && j + cycle - 2 * i < inputLength) {
+                output[k++] = input[j + cycle - 2 * i];
+            }
+        }
     }
- 
-    printf("\nEncrypted Message: ");
- 
-    for(i = 0; i < key; ++i)
-        for(j = 0; j < msgLen; ++j)
-            if(railMatrix[i][j] != '\n')
-                printf("%c", railMatrix[i][j]);
+    output[inputLength] = '\0';
 }
- 
-void decryptMsg(char enMsg[], int key){
-    int msgLen = strlen(enMsg), i, j, k = -1, row = 0, col = 0, m = 0;
-    char railMatrix[key][msgLen];
- 
-    for(i = 0; i < key; ++i)
-        for(j = 0; j < msgLen; ++j)
-            railMatrix[i][j] = '\n';
- 
-    for(i = 0; i < msgLen; ++i){
-        railMatrix[row][col++] = '*';
- 
-        if(row == 0 || row == key-1)
-            k= k * (-1);
- 
-        row = row + k;
-    }
- 
-    for(i = 0; i < key; ++i)
-        for(j = 0; j < msgLen; ++j)
-            if(railMatrix[i][j] == '*')
-                railMatrix[i][j] = enMsg[m++];
- 
-    row = col = 0;
-    k = -1;
- 
-    printf("\nDecrypted Message: ");
- 
-    for(i = 0; i < msgLen; ++i){
-        printf("%c", railMatrix[row][col++]);
- 
-        if(row == 0 || row == key-1)
-            k= k * (-1);
- 
-        row = row + k;
-    }
-}
- 
-int main(){
-    char msg[] = "Hello World";
-    char enMsg[] = "Horel ollWd";
-    int key = 3;
- 
-    printf("Original Message: %s", msg);
- 
-    encryptMsg(msg, key);
-    decryptMsg(enMsg, key);
- 
+
+int main() {
+    char input[MAX_LENGTH];
+    char encrypted[MAX_LENGTH];
+    int rails;
+
+    printf("Enter the text to encrypt: ");
+    fgets(input, MAX_LENGTH, stdin);
+    input[strcspn(input, "\n")] = '\0'; // Remove trailing newline if present
+
+    printf("Enter the number of rails: ");
+    scanf("%d", &rails);
+    getchar(); // Consume the newline character left in the input buffer
+
+    // Encrypt the input text
+    railFenceEncrypt(input, rails, encrypted);
+    printf("Encrypted text: %s\n", encrypted);
+
     return 0;
 }
+
 ```
 
 ## OUTPUT:
-```
-Original Message: Hello World
-Encrypted Message: Horel ollWd
-Decrypted Message: Hello World
-```
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/8ddd32bd-eaae-4e4b-8e50-b3391f05019f)
+
 
 ## RESULT:
-The program is executed successfully
+The program is executed successfully.
