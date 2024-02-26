@@ -97,191 +97,148 @@ Testing algorithm with different key values.
 
 ## PROGRAM:
 ```
-// Implementation of Playfair Cipher in C program
 
-#include <stdio.h>   //header file
-#include <stdlib.h>  //header file
-#include <string.h>  //header file
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h> 
 
-#define SIZE 30
-
-// this function will convert the string to lowercase
-
-void toLowerCase(char plain[], int ps)
-{
-    int i;
-    for (i = 0; i < ps; i++) {
-        if (plain[i] > 64 && plain[i] < 91)
-            plain[i] += 32;
+/* Function for Playfair Cipher encryption  */
+void Playfair(char str[], char keystr[]) {
+    char keyMat[5][5];
+    // Key & plainText
+    char ks = strlen(keystr);
+    char ps = strlen(str);
+    void toUpperCase(char encrypt[], int ps) {
+        for (int i= 0; i < ps; i++) {
+            if (encrypt[i] > 96 && encrypt[i] < 123)
+                encrypt[i] -= 32;
+        }
     }
-}
-
-// this function will remove all the spaces
-int removeSpaces(char* plain, int ps)
-{
-    int i, count = 0;
-    for (i = 0; i < ps; i++)
-        if (plain[i] != ' ')
-            plain[count++] = plain[i];
-    plain[count] = '\0';
-    return count;
-}
-
-// this function will generate the 5x5 grid square
-void generateKeyTable(char key[], int ks, char keyT[5][5])
-{
-    int i, j, k, flag = 0, *dicty;
-
-    // character hashmap of 26 character that will
-    // store count of the alphabet.
-    dicty = (int*)calloc(26, sizeof(int));
-    for (i = 0; i < ks; i++) {
-        if (key[i] != 'j')
-            dicty[key[i] - 97] = 2;
+    int removeSpaces(char* plain, int ps) {
+        int i, count = 0;
+        for (i = 0; i < ps; i++)
+            if (plain[i] != ' ')
+                plain[count++] = plain[i];
+        plain[count] = '\0';
+        return count;
     }
-
-    dicty['j' - 97] = 1;
-
-    i = 0;
-    j = 0;
-
-    for (k = 0; k < ks; k++) {
-        if (dicty[key[k] - 97] == 2) {
-            dicty[key[k] - 97] -= 1;
-            keyT[i][j] = key[k];
-            j++;
-            if (j == 5) {
-                i++;
-                j = 0;
+    /* this function will create a 5 by 5 matrix. */
+    void createMatrix(char keystr[], int ks, char keyMat[5][5]) {
+        int flag = 0, *dict;
+        /* here we are creating a hashmap for alphabets */
+        dict = (int*)calloc(26, sizeof(int));
+        for (int i = 0; i < ks; i++) {
+            if (keystr[i] != 'j')
+                dict[keystr[i] - 97] = 2;
+        }
+        dict['j' - 97] = 1;
+        int i = 0, j = 0;
+        for (int k = 0; k < ks; k++) {
+            if (dict[keystr[k] - 97] == 2) {
+                dict[keystr[k] - 97] -= 1;
+                keyMat[i][j] = keystr[k];
+                j++;
+                if (j == 5) {
+                    i++;
+                    j = 0;
+                }
+            }
+        }
+        for (int k = 0; k < 26; k++) {
+            if (dict[k] == 0) {
+                keyMat[i][j] = (char)(k + 97);
+                j++;
+                if (j == 5) {
+                    i++;
+                    j = 0;
+                }
             }
         }
     }
-
-    for (k = 0; k < 26; k++) {
-        if (dicty[k] == 0) {
-            keyT[i][j] = (char)(k + 97);
-            j++;
-            if (j == 5) {
-                i++;
-                j = 0;
+    /*this function looks for a digraph's characters in the key matrix and returns their positions.*/
+    void search(char keyMat[5][5], char a, char b, int arr[]) {
+        if (a == 'j')
+            a = 'i';
+        else if (b == 'j')
+            b = 'i';
+        for(int i = 0; i < 5; i++) {
+            for(int j = 0; j < 5; j++) {
+                if (keyMat[i][j] == a) {
+                    arr[0] = i;
+                    arr[1] = j;
+                }
+                else if (keyMat[i][j] == b) {
+                    arr[2] = i;
+                    arr[3] = j;
+                }
             }
         }
     }
-}
-
-// this function will search for the characters of a digraph
-// in the key and return position of key
-void search(char keyT[5][5], char a, char b, int arr[])
-{
-    int i, j;
-
-    if (a == 'j')
-        a = 'i';
-    else if (b == 'j')
-        b = 'i';
-
-    for (i = 0; i < 5; i++) {
-
-        for (j = 0; j < 5; j++) {
-
-            if (keyT[i][j] == a) {
-                arr[0] = i;
-                arr[1] = j;
-            }
-            else if (keyT[i][j] == b) {
-                arr[2] = i;
-                arr[3] = j;
+    /* This function avoids duplication and levels out the length of plain text by making it even.*/
+    int prep(char str[], int p) {
+        int sub = p;
+        for (int i = 0; i < sub; i += 2) {
+            if(str[i]==str[i+1]){
+                for(int j=sub; j>i+1; j--){
+                   str[j]=str[j-1];
+                }
+                str[i+1]='x';
+                sub+=1;
             }
         }
-    }
-}
-
-// this function will find the modulus with 5
-int mod5(int a) { return (a % 5); }
-
-// this function will make the plain text length even
-int prepare(char str[], int ptrs)
-{
-    if (ptrs % 2 != 0) {
-        str[ptrs++] = 'z';
-        str[ptrs] = '\0';
-    }
-    return ptrs;
-}
-
-// encryption will done using this function
-void encrypt(char str[], char keyT[5][5], int ps)
-{
-    int i, a[4];
-
-    for (i = 0; i < ps; i += 2) {
-
-        search(keyT, str[i], str[i + 1], a);
-
-        if (a[0] == a[2]) {
-            str[i] = keyT[a[0]][mod5(a[1] + 1)];
-            str[i + 1] = keyT[a[0]][mod5(a[3] + 1)];
+        str[sub]='\0';
+        if (sub % 2 != 0) {
+            str[sub++] = 'z';
+            str[sub] = '\0';
         }
-        else if (a[1] == a[3]) {
-            str[i] = keyT[mod5(a[0] + 1)][a[1]];
-            str[i + 1] = keyT[mod5(a[2] + 1)][a[1]];
-        }
-        else {
-            str[i] = keyT[a[0]][a[3]];
-            str[i + 1] = keyT[a[2]][a[1]];
+        return sub;
+    }
+    // Here, the encryption is done.
+    void encrypt(char str[], char keyMat[5][5], int pos) {
+        int a[4];
+        for(int i=0; i<pos; i+=2){
+            search(keyMat, str[i], str[i + 1], a);
+            if (a[0] == a[2]) {
+                str[i] = keyMat[a[0]][(a[1] + 1)%5];
+                str[i + 1] = keyMat[a[0]][(a[3] + 1)%5];
+            }
+            else if (a[1] == a[3]) {
+                str[i] = keyMat[(a[0] + 1)%5][a[1]];
+                str[i + 1] = keyMat[(a[2] + 1)%5][a[1]];
+            }
+            else {
+                str[i] = keyMat[a[0]][a[3]];
+                str[i + 1] = keyMat[a[2]][a[1]];
+            }
         }
     }
-}
-
-// this function will encrypt cipher text using Playfair Cipher algorithm
-void encryptByPlayfairCipher(char str[], char key[])
-{
-    char ps, ks, keyT[5][5];
-
-    
-    ks = strlen(key);
-    ks = removeSpaces(key, ks);
-    toLowerCase(key, ks);
-
-    
-    ps = strlen(str);
-    toLowerCase(str, ps);
+    ks = removeSpaces(keystr, ks);
     ps = removeSpaces(str, ps);
-
-    ps = prepare(str, ps);
-
-    generateKeyTable(key, ks, keyT);
-
-    encrypt(str, keyT, ps);
+    ps = prep(str, ps);
+    createMatrix(keystr, ks, keyMat);
+    encrypt(str, keyMat, ps);
+    toUpperCase(str, ps);
+    /* str is the final encrypted string in uppercase */
+    printf("Cipher text: %s\n", str);
 }
 
-// main code
-int main()
-{
-    char str[SIZE], key[SIZE];
 
-    // key text
-    strcpy(key, "Algorithm");
-    printf("Key text: %s\n", key);
-
-    // Plaintext
-    strcpy(str, "Programming");
-    printf("Plain text: %s\n", str);
-
-    // encryption using the "Playfair Cipher" algorithmn
-    encryptByPlayfairCipher(str, key);
-
-    printf("Cipher text: %s\n", str);
-
+int main() {
+    char string[200], keyString[200];
+    printf("Enter key: ");
+    scanf("%[^\n]s", &keyString);
+    printf("Enter plaintext: ");
+    scanf("\n");
+    scanf("%[^\n]s", &string);
+    
+    //Playfair Cipher Program in C functional call
+    Playfair(string, keyString);
     return 0;
 }
 ```
 ## OUTPUT:
-```
-Key text: Algorithm
-Plain text: Programming
-Cipher text: ulroaliocvrx
-```
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/8fd8e37d-653e-4b89-93e0-ba9e45088ab9)
+
 
 ## RESULT:
 The program is executed successfully
