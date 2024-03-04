@@ -27,39 +27,49 @@ Testing algorithm with different key values.
 #include <stdio.h>
 #include <string.h>
 
-int main() {
-    // Declaring variables
-    int i, key;
-    char s[1000], c;
-
-    // Taking Input
-    printf("Enter a plaintext to encrypt:\n");
-    fgets(s, sizeof(s), stdin);
-    printf("Enter key:\n");
-    scanf("%d", &key);
-
-    int n = strlen(s);
-
-    // Encrypting each character according to the given key
-    for (i = 0; i < n; i++) {
-        c = s[i];
-        if (c >= 'a' && c <= 'z') {
-            c = c + key;
-            if (c > 'z') {
-                c = c - 'z' + 'a' - 1;
-            }
-            s[i] = c;
-        } else if (c >= 'A' && c <= 'Z') {
-            c = c + key;
-            if (c > 'Z') {
-                c = c - 'Z' + 'A' - 1;
-            }
-            s[i] = c;
-        }
+// Function to perform Caesar cipher encryption
+void encrypt(char *text, int shift) {
+    int i;
+    for (i = 0; i < strlen(text); i++) {
+        // Encrypt uppercase letters
+        if (text[i] >= 'A' && text[i] <= 'Z')
+            text[i] = (text[i] - 'A' + shift) % 26 + 'A';
+        // Encrypt lowercase letters
+        else if (text[i] >= 'a' && text[i] <= 'z')
+            text[i] = (text[i] - 'a' + shift) % 26 + 'a';
     }
+}
 
-    // Output the cipher
-    printf("Encrypted message: %s\n", s);
+// Function to perform Caesar cipher decryption
+void decrypt(char *text, int shift) {
+    int i;
+    for (i = 0; i < strlen(text); i++) {
+        // Decrypt uppercase letters
+        if (text[i] >= 'A' && text[i] <= 'Z')
+            text[i] = (text[i] - 'A' - shift + 26) % 26 + 'A';
+        // Decrypt lowercase letters
+        else if (text[i] >= 'a' && text[i] <= 'z')
+            text[i] = (text[i] - 'a' - shift + 26) % 26 + 'a';
+    }
+}
+
+int main() {
+    char text[100];
+    int shift;
+    
+    printf("Enter text to encrypt: ");
+    fgets(text, sizeof(text), stdin);
+    
+    printf("Enter Key value: ");
+    scanf("%d", &shift);
+
+    // Encrypt the text
+    encrypt(text, shift);
+    printf("Encrypted text: %s\n", text);
+
+    // Decrypt the text
+    decrypt(text, shift);
+    printf("Decrypted text: %s\n", text);
 
     return 0;
 }
