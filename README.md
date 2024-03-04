@@ -417,47 +417,56 @@ Testing algorithm with different key values.
 
 ## PROGRAM:
 ```
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 
-#define MAX_LENGTH 100
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
 
-// Function to encrypt text using the Rail Fence cipher
-void railFenceEncrypt(char *input, int rails, char *output) {
-    int inputLength = strlen(input);
-    int cycle = 2 * (rails - 1);
+int main(){
+    int i, j, k, l;
+    char a[20], c[20], d[20];
 
-    for (int i = 0, k = 0; i < rails; ++i) {
-        for (int j = i; j < inputLength; j += cycle) {
-            output[k++] = input[j];
-            if (i != 0 && i != rails - 1 && j + cycle - 2 * i < inputLength) {
-                output[k++] = input[j + cycle - 2 * i];
-            }
-        }
+    printf("\n\t\t RAIL FENCE TECHNIQUE");
+    printf("\n\nEnter the input string : ");
+    gets(a);
+    l = strlen(a);
+
+    // Ciphering
+    for(i = 0, j = 0; i < l; i++){
+        if(i % 2 == 0)
+            c[j++] = a[i];
     }
-    output[inputLength] = '\0';
-}
+    for(i = 0; i < l; i++){
+        if(i % 2 == 1)
+            c[j++] = a[i];
+    }
+    c[j] = '\0';
 
-int main() {
-    char input[MAX_LENGTH];
-    char encrypted[MAX_LENGTH];
-    int rails;
+    printf("\nCipher text after applying rail fence :");
+    printf("%s", c);
 
-    printf("Enter the text to encrypt: ");
-    fgets(input, MAX_LENGTH, stdin);
-    input[strcspn(input, "\n")] = '\0'; // Remove trailing newline if present
+    // Deciphering
+    if(l % 2 == 0)
+        k = l / 2;
+    else
+        k = (l / 2) + 1;
 
-    printf("Enter the number of rails: ");
-    scanf("%d", &rails);
-    getchar(); // Consume the newline character left in the input buffer
+    for(i = 0, j = 0; i < k; i++){
+        d[j] = c[i];
+        j = j + 2;
+    }
+    for(i = k, j = 1; i < l; i++){
+        d[j] = c[i];
+        j = j + 2;
+    }
+    d[l] = '\0';
 
-    // Encrypt the input text
-    railFenceEncrypt(input, rails, encrypted);
-    printf("Encrypted text: %s\n", encrypted);
+    printf("\nText after decryption : ");
+    printf("%s", d);
 
     return 0;
 }
+
 
 ```
 
