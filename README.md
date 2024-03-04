@@ -76,7 +76,8 @@ int main() {
 ```
 
 ## OUTPUT:
-![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/6e84dc05-af77-44f4-b880-0f9e995262cc)
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/5f561481-4e77-4d96-94f3-86a4c2bff81a)
+
 
 
 ## RESULT:
@@ -213,7 +214,8 @@ int main() {
 
 ```
 ## OUTPUT:
-![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/8fd8e37d-653e-4b89-93e0-ba9e45088ab9)
+![Screenshot 2024-03-04 203447](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/08fdcc69-83d3-4b56-9522-e568f056db02)
+
 
 
 ## RESULT:
@@ -471,7 +473,8 @@ int main(){
 ```
 
 ## OUTPUT:
-![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/8ddd32bd-eaae-4e4b-8e50-b3391f05019f)
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/e9f7b3a4-c4ea-4a60-871a-36cc1d2452c3)
+
 
 
 ## RESULT:
