@@ -108,143 +108,109 @@ Testing algorithm with different key values.
 ## PROGRAM:
 ```
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h> 
 
-/* Function for Playfair Cipher encryption  */
-void Playfair(char str[], char keystr[]) {
-    char keyMat[5][5];
-    // Key & plainText
-    char ks = strlen(keystr);
-    char ps = strlen(str);
-    void toUpperCase(char encrypt[], int ps) {
-        for (int i= 0; i < ps; i++) {
-            if (encrypt[i] > 96 && encrypt[i] < 123)
-                encrypt[i] -= 32;
-        }
+#include<stdio.h>
+#include<conio.h>
+#include<string.h>
+#include<ctype.h>
+#define MX 5
+
+void playfair(char ch1, char ch2, char key[MX][MX]) {
+    int i, j, w, x, y, z;
+    FILE *out;
+    if ((out = fopen("cipher.txt", "a+")) == NULL) {
+        printf("File Corrupted.");
     }
-    int removeSpaces(char* plain, int ps) {
-        int i, count = 0;
-        for (i = 0; i < ps; i++)
-            if (plain[i] != ' ')
-                plain[count++] = plain[i];
-        plain[count] = '\0';
-        return count;
-    }
-    /* this function will create a 5 by 5 matrix. */
-    void createMatrix(char keystr[], int ks, char keyMat[5][5]) {
-        int flag = 0, *dict;
-        /* here we are creating a hashmap for alphabets */
-        dict = (int*)calloc(26, sizeof(int));
-        for (int i = 0; i < ks; i++) {
-            if (keystr[i] != 'j')
-                dict[keystr[i] - 97] = 2;
-        }
-        dict['j' - 97] = 1;
-        int i = 0, j = 0;
-        for (int k = 0; k < ks; k++) {
-            if (dict[keystr[k] - 97] == 2) {
-                dict[keystr[k] - 97] -= 1;
-                keyMat[i][j] = keystr[k];
-                j++;
-                if (j == 5) {
-                    i++;
-                    j = 0;
-                }
-            }
-        }
-        for (int k = 0; k < 26; k++) {
-            if (dict[k] == 0) {
-                keyMat[i][j] = (char)(k + 97);
-                j++;
-                if (j == 5) {
-                    i++;
-                    j = 0;
-                }
+    for (i = 0; i < MX; i++) {
+        for (j = 0; j < MX; j++) {
+            if (ch1 == key[i][j]) {
+                w = i;
+                x = j;
+            } else if (ch2 == key[i][j]) {
+                y = i;
+                z = j;
             }
         }
     }
-    /*this function looks for a digraph's characters in the key matrix and returns their positions.*/
-    void search(char keyMat[5][5], char a, char b, int arr[]) {
-        if (a == 'j')
-            a = 'i';
-        else if (b == 'j')
-            b = 'i';
-        for(int i = 0; i < 5; i++) {
-            for(int j = 0; j < 5; j++) {
-                if (keyMat[i][j] == a) {
-                    arr[0] = i;
-                    arr[1] = j;
-                }
-                else if (keyMat[i][j] == b) {
-                    arr[2] = i;
-                    arr[3] = j;
-                }
-            }
-        }
+    if (w == y) {
+        x = (x + 1) % 5;
+        z = (z + 1) % 5;
+        printf("%c%c", key[w][x], key[y][z]);
+        fprintf(out, "%c%c", key[w][x], key[y][z]);
+    } else if (x == z) {
+        w = (w + 1) % 5;
+        y = (y + 1) % 5;
+        printf("%c%c", key[w][x], key[y][z]);
+        fprintf(out, "%c%c", key[w][x], key[y][z]);
+    } else {
+        printf("%c%c", key[w][z], key[y][x]);
+        fprintf(out, "%c%c", key[w][z], key[y][x]);
     }
-    /* This function avoids duplication and levels out the length of plain text by making it even.*/
-    int prep(char str[], int p) {
-        int sub = p;
-        for (int i = 0; i < sub; i += 2) {
-            if(str[i]==str[i+1]){
-                for(int j=sub; j>i+1; j--){
-                   str[j]=str[j-1];
-                }
-                str[i+1]='x';
-                sub+=1;
-            }
-        }
-        str[sub]='\0';
-        if (sub % 2 != 0) {
-            str[sub++] = 'z';
-            str[sub] = '\0';
-        }
-        return sub;
-    }
-    // Here, the encryption is done.
-    void encrypt(char str[], char keyMat[5][5], int pos) {
-        int a[4];
-        for(int i=0; i<pos; i+=2){
-            search(keyMat, str[i], str[i + 1], a);
-            if (a[0] == a[2]) {
-                str[i] = keyMat[a[0]][(a[1] + 1)%5];
-                str[i + 1] = keyMat[a[0]][(a[3] + 1)%5];
-            }
-            else if (a[1] == a[3]) {
-                str[i] = keyMat[(a[0] + 1)%5][a[1]];
-                str[i + 1] = keyMat[(a[2] + 1)%5][a[1]];
-            }
-            else {
-                str[i] = keyMat[a[0]][a[3]];
-                str[i + 1] = keyMat[a[2]][a[1]];
-            }
-        }
-    }
-    ks = removeSpaces(keystr, ks);
-    ps = removeSpaces(str, ps);
-    ps = prep(str, ps);
-    createMatrix(keystr, ks, keyMat);
-    encrypt(str, keyMat, ps);
-    toUpperCase(str, ps);
-    /* str is the final encrypted string in uppercase */
-    printf("Cipher text: %s\n", str);
+    fclose(out);
 }
-
 
 int main() {
-    char string[200], keyString[200];
-    printf("Enter key: ");
-    scanf("%[^\n]s", &keyString);
-    printf("Enter plaintext: ");
-    scanf("\n");
-    scanf("%[^\n]s", &string);
-    
-    //Playfair Cipher Program in C functional call
-    Playfair(string, keyString);
+    int i, j, k = 0, l, m = 0, n;
+    char key[MX][MX], keyminus[25], keystr[10], str[25] = {0};
+    char alpa[26] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+    printf("\nEnter key:");
+    gets(keystr);
+    printf("\nEnter the plain text:");
+    gets(str);
+    n = strlen(keystr);
+    for (i = 0; i < n; i++) {
+        if (keystr[i] == 'j') keystr[i] = 'i';
+        else if (keystr[i] == 'J') keystr[i] = 'I';
+        keystr[i] = toupper(keystr[i]);
+    }
+    for (i = 0; i < strlen(str); i++) {
+        if (str[i] == 'j') str[i] = 'i';
+        else if (str[i] == 'J') str[i] = 'I';
+        str[i] = toupper(str[i]);
+    }
+    j = 0;
+    for (i = 0; i < 26; i++) {
+        for (k = 0; k < n; k++) {
+            if (keystr[k] == alpa[i]) break;
+            else if (alpa[i] == 'J') break;
+        }
+        if (k == n) {
+            keyminus[j] = alpa[i];
+            j++;
+        }
+    }
+    k = 0;
+    for (i = 0; i < MX; i++) {
+        for (j = 0; j < MX; j++) {
+            if (k < n) {
+                key[i][j] = keystr[k];
+                k++;
+            } else {
+                key[i][j] = keyminus[m];
+                m++;
+            }
+            printf("%c ", key[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n\nEntered text :%s\nCipher Text :",str);
+    for (i = 0; i < strlen(str); i++) {
+        if (str[i] == 'J') str[i] = 'I';
+        if (str[i + 1] == '\0') playfair(str[i], 'X', key);
+        else {
+            if (str[i + 1] == 'J') str[i + 1] = 'I';
+            if (str[i] == str[i + 1]) playfair(str[i], 'X', key);
+            else {
+                playfair(str[i], str[i + 1], key);
+                i++;
+            }
+        }
+  
+    }
+     printf("\nDecrypted text:%s",str);
     return 0;
 }
+
 ```
 ## OUTPUT:
 ![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/8fd8e37d-653e-4b89-93e0-ba9e45088ab9)
