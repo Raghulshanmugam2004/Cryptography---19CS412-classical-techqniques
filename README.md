@@ -288,7 +288,8 @@ int main() {
 ```
 
 ## OUTPUT:
-![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/0fe2651e-6b45-42fd-8cc6-c608c4a07d4e)
+![image](https://github.com/Raghulshanmugam2004/Cryptography---19CS412-classical-techqniques/assets/119561118/f30588b2-0586-4b3a-96cb-64b4de13d65d)
+
 
 
 ## RESULT:
